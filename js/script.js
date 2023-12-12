@@ -1,86 +1,59 @@
-			
-// POKEMONS
 
-let dades;
-let nomsPokemon = [];
-let nomsMunicipis = [];
-let nomMeteorits = [];
-let nomMovies = [];
-
-
+let info = []
 // POKEMONS
 fetch("js/data/pokemon.json")
-.then((response) => response.json())
-.then((data) => {
-	dades = data.pokemon;
-	console.log(dades)
-	console.log(dades[0].name)
-
-	for (let i= 0; i < dades.length; i++){
-		nomsPokemon.push(dades[i].name);
-
-	}
-
-
-});
-
-
+    .then((response) => response.json())
+    .then((data) => {
+        let nomsPokemon = data.pokemon;
+        nomsPokemon.forEach((pokemon) => {
+            info.push({ pokemon: pokemon.name, municipi: " ", meteorit: " ", movie: ""  }); 
+        });
+    });
 
 // MUNICIPIS
 fetch("js/data/municipis.json")
-.then((response) => response.json())
-.then((data) => {
-	dades = data.elements;		
-	
-	console.log(dades)
-	console.log(dades[0].municipi_nom)
-
-	for (let i = 0; i < dades.length; i++){
-		nomsMunicipis.push(dades[i].municipi_nom);
-
-	}
-	
-	
-	
-});
-
-
+    .then((response) => response.json())
+    .then((data) => {
+        let nomsMunicipis = data.elements;
+        nomsMunicipis.forEach((municipi, index) => {
+            if (info[index]) {
+                info[index].municipi = municipi.municipi_nom;
+            } else {
+                info[index] = { pokemon: " ", municipi: municipi.municipi_nom, meteorit: " ", movie: " " }; 
+            }
+        });
+    });
 
 // METEORITS
 fetch("js/data/earthMeteorites.json")
-.then((response) => response.json())
-.then((data) => {
-	dades = data;		
-	
-	// console.log(dades)
-	// console.log(dades[0].name)
-	for (let i = 0; i < dades.length; i++){
-		nomMeteorits.push(dades[i].name);
-
-	}
-});
-
+    .then((response) => response.json())
+    .then((data) => {
+        let nomMeteorits = data;
+        nomMeteorits.forEach((meteorit, index) => {
+            if (info[index]) {
+                info[index].meteorit = meteorit.name;
+            } else {
+                info[index] = { pokemon: " ", municipi: " ", meteorit: meteorit.name, movie: " " }; 
+            }
+        });
+    });
 
 // MOVIES
 fetch("js/data/movies.json")
-.then((response) => response.json())
-.then((data) => {
-	dades = data.movies;		
-	
-	// console.log(dades)
-	// console.log(dades[0].title)
-	for (let i = 0; i < dades.length; i++){
-		nomMovies.push(dades[i].title);
+    .then((response) => response.json())
+    .then((data) => {
+        let nomMovies = data.movies;
+        nomMovies.forEach((movie, index) => {
+            if (info[index]) {
+                info[index].movie = movie.title;
+            } else {
+                info[index] = { pokemon: " ", municipi: " ", meteorit: " ", movie: movie.title }; 
+            }
+        });
 
-	}
-	
-});
-
-// Mostrem les dades 
-
-let info = nomsPokemon.map((pokemon, municipis,meteorits,movies) => {
-	return { pokemon: pokemon, municipi: nomsMunicipis[municipis],meteorit: nomMeteorits[meteorits], movie: nomMovies[movies] };
-});
+        // Mostra les dades en una taula
+        console.table(info);
+    });
 
 
-console.table(info);
+
