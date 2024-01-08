@@ -1,3 +1,6 @@
+// TODO  BUSCA ASC DESC DE RESTA DE TAULES, BUSCA GENERAL DE MOVIES I CONSTRUÏR TAULA MOVIES
+
+
 /* PART 0: Accedir al JSON i començar a llistar dades */
 
 let info = [];
@@ -122,6 +125,7 @@ function searchList(){
         let taula = "<table>";
         taula += "<th>INE</th><th>Escut</th><th>Nom</th><th>NºHabitants</th>";
         pokemons.forEach((municipi,index) => {
+            if (municipis[index][2].toLowerCase().includes(valor)){
             let ineMunicipi = municipis[index][0];
             let escutMunicipi = municipis[index][1];
             let nomsMunicipi = municipis[index][2];
@@ -129,12 +133,27 @@ function searchList(){
             taula+= "<tr>";
             taula += `<td> ${ineMunicipi} </td> <td><img src="${escutMunicipi}"><td> ${nomsMunicipi} </td></td><td>${nombreHabitantsMunicipi}</td>`;
             taula += "</tr>";
+            }
         });
                 
         taula += "</table>";
         div.innerHTML = taula;
     }else if (tipus == "meteorit"){
-        
+        let div = document.getElementById("taulaDades");
+        let taula = "<table>";
+        taula += "<th>Id</th><th>Nom</th><th>Any</th>";
+        pokemons.forEach((meteorit,index) => {
+            let idMeteorit = meteos[index][0];
+            let nomMeteorit = meteos[index][1];
+            let anyMeteorit = meteos[index][2];
+            
+            taula+= "<tr>";
+            taula += `<td> ${idMeteorit} </td><td> ${nomMeteorit} </td></td><td>${anyMeteorit}</td>`;
+            taula += "</tr>";
+        });
+
+        taula += "</table>";
+        div.innerHTML = taula;
     }else if (tipus == "movies"){
         
     }
