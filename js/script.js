@@ -8,13 +8,13 @@ let pokemons=[];
 let municipis =[];
 let meteos =[];
 let pelis =[];
+let chartPokemon="";
 
 // POKEMONS
 fetch("js/data/pokemon.json")
     .then((response) => response.json())
     .then((data) => {
         let nomsPokemon = data.pokemon;
-        console.log(`Resultat del data.pokemon: ${JSON.stringify(data.pokemon)}`);
         nomsPokemon.forEach((pokemon) => {
             pokemons.push([pokemon.name,pokemon.img,pokemon.weight.slice(0,-2),pokemon.id]);
             info.push({ pokemon: pokemon.name, municipi: " ", meteorit: " ", movie: ""  }); 
@@ -57,8 +57,10 @@ fetch("js/data/movies.json")
     .then((response) => response.json())
     .then((data) => {
         let nomMovies = data.movies;
+        
         nomMovies.forEach((movie, index) => {
-
+            pelis.push([movie.url, movie.title,movie.year, movie.rating]);
+            
             if (info[index]) {
                 info[index].movie = movie.title;
             } else {
@@ -67,7 +69,7 @@ fetch("js/data/movies.json")
         });
         
         // Mostra les dades en una taula
-        console.table(info);
+        // console.table(info);
     });
 
 
@@ -79,7 +81,8 @@ function iniciar(){
     
 }
 
-function orderList(ordre){
+function orderList(ordre){ // ORDENAR PER ID
+
 	if (ordre=="ASC"){
 		pokemons.sort();
     }   
@@ -90,16 +93,18 @@ function orderList(ordre){
     printList();
 }
 
-//Funció que fa de buscador
+//Funció que fa de buscador, per llògica he decidit que busqui pel nom 
 function searchList(){
 
     let valor = document.getElementById('buscador').value.toLowerCase();
     let llista = document.querySelector('select[name="llistes"]');
     let tipus = llista.value; // agafem quina llista ha escollit l'usuari per buscar només en aquesta
 
-    console.log(`Aquest es el valor ${valor} i aquest és el tipus ${tipus}`);
+    // console.log(`Aquest es el valor ${valor} i aquest és el tipus ${tipus}`);
     
     if (tipus == "pokemon"){
+
+        
 
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
@@ -124,15 +129,15 @@ function searchList(){
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>INE</th><th>Escut</th><th>Nom</th><th>NºHabitants</th>";
-        pokemons.forEach((municipi,index) => {
+        municipis.forEach((municipi,index) => {
             if (municipis[index][2].toLowerCase().includes(valor)){
-            let ineMunicipi = municipis[index][0];
-            let escutMunicipi = municipis[index][1];
-            let nomsMunicipi = municipis[index][2];
-            let nombreHabitantsMunicipi= municipis[index][3];
-            taula+= "<tr>";
-            taula += `<td> ${ineMunicipi} </td> <td><img src="${escutMunicipi}"><td> ${nomsMunicipi} </td></td><td>${nombreHabitantsMunicipi}</td>`;
-            taula += "</tr>";
+                let ineMunicipi = municipis[index][0];
+                let escutMunicipi = municipis[index][1];
+                let nomsMunicipi = municipis[index][2];
+                let nombreHabitantsMunicipi= municipis[index][3];
+                taula+= "<tr>";
+                taula += `<td> ${ineMunicipi} </td> <td><img src="${escutMunicipi}"><td> ${nomsMunicipi} </td></td><td>${nombreHabitantsMunicipi}</td>`;
+                taula += "</tr>";
             }
         });
                 
@@ -142,20 +147,41 @@ function searchList(){
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>Id</th><th>Nom</th><th>Any</th>";
-        pokemons.forEach((meteorit,index) => {
-            let idMeteorit = meteos[index][0];
-            let nomMeteorit = meteos[index][1];
-            let anyMeteorit = meteos[index][2];
-            
-            taula+= "<tr>";
-            taula += `<td> ${idMeteorit} </td><td> ${nomMeteorit} </td></td><td>${anyMeteorit}</td>`;
-            taula += "</tr>";
+        meteos.forEach((meteorit,index) => {
+            if (meteos[index][1].toLowerCase().includes(valor)){
+                let idMeteorit = meteos[index][0];
+                let nomMeteorit = meteos[index][1];
+                let anyMeteorit = meteos[index][2];
+                
+                taula+= "<tr>";
+                taula += `<td> ${idMeteorit} </td><td> ${nomMeteorit} </td><td>${anyMeteorit}</td>`;
+                taula += "</tr>";
+            }
         });
 
         taula += "</table>";
         div.innerHTML = taula;
-    }else if (tipus == "movies"){
         
+    }else if (tipus == "movies"){
+        console.log(pelis);
+        let div = document.getElementById("taulaDades");
+        let taula = "<table>";
+        taula += "<th>Titol</th><th>Imatge</th><th>Any</th><th>Puntuació</th>";
+        pelis.forEach((movie,index) => {
+            if (pelis[index][1].toLowerCase().includes(valor)){
+            let imatgePeli = pelis[index][0];
+            let titolPeli = pelis[index][1];
+            let anyPeli = pelis[index][2];
+            let puntuacioPeli = pelis[index][3];
+            
+            taula+= "<tr>";
+            taula += `<td> <img src="${imatgePeli}"> </td><td> ${titolPeli} </td><td>${anyPeli}</td><td>${puntuacioPeli}</td>`;
+            taula += "</tr>";
+            }
+        });
+
+        taula += "</table>";
+        div.innerHTML = taula;
     }
 	
 }
@@ -202,7 +228,7 @@ function printList(){
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>INE</th><th>Escut</th><th>Nom</th><th>NºHabitants</th>";
-        pokemons.forEach((municipi,index) => {
+        municipis.forEach((municipi,index) => {
             let ineMunicipi = municipis[index][0];
             let escutMunicipi = municipis[index][1];
             let nomsMunicipi = municipis[index][2];
@@ -219,7 +245,7 @@ function printList(){
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>Id</th><th>Nom</th><th>Any</th>";
-        pokemons.forEach((meteorit,index) => {
+        meteos.forEach((meteorit,index) => {
             let idMeteorit = meteos[index][0];
             let nomMeteorit = meteos[index][1];
             let anyMeteorit = meteos[index][2];
@@ -233,6 +259,67 @@ function printList(){
         div.innerHTML = taula;
         
     } else if (valor == "movies") {
-        document.write("movies");
+        let div = document.getElementById("taulaDades");
+        let taula = "<table>";
+        taula += "<th>Imatge</th><th>Titol</th><th>Any</th><th>Puntuació</th>";
+        pelis.forEach((movie,index) => {
+            
+            let imatgePeli = pelis[index][0];
+            let titolPeli = pelis[index][1];
+            let anyPeli = pelis[index][2];
+            let puntuacioPeli = pelis[index][3];
+            
+            taula+= "<tr>";
+            taula += `<td> <img src="${imatgePeli}"> </td><td> ${titolPeli} </td><td>${anyPeli}</td><td>${puntuacioPeli}</td>`;
+            taula += "</tr>";
+        });
+
+        taula += "</table>";
+        div.innerHTML = taula;
     }
+    showChart();
+}
+
+// Funció que mostra el Chart
+function showChart(){ 
+
+    // if (chartPokemon.length >0){
+    //     chartPokemon.destroy();
+    // }
+
+    let arrayLabels=["Grass","Poison","Fire","Flying","Water","Bug","Normal","Electric","Ground","Fighting","Psychic","Rock","Ice","Ghost","Dragon"];
+    let arrayDadesGraf=[14,33,12,19,32,12,24,9,14,8,14,11,5,3,3];
+    let backgroundColor = new Array(arrayLabels.length);
+    let borderColor = new Array(arrayLabels.length);
+    
+    borderColor.forEach((posicio)=>{
+        let r = Math.floor(Math.random() * 256).toString();
+        let g = Math.floor(Math.random() * 256).toString();
+        let b = Math.floor(Math.random() * 256).toString();
+        // borderColor.push([posicio.r,posicio.g,posicio.b]);
+        
+        console.log(`quedaria aprox ${r}${g}${b}`);
+
+    });
+
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+      type: 'polarArea',
+      data: {
+        labels: arrayLabels,
+        datasets: [{
+          label: '# of Pokemons',
+          data: arrayDadesGraf,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
 }

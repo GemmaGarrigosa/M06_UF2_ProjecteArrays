@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="css/styles.css">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<title>Dades Massives</title>
 </head>
 <body>
@@ -28,9 +29,11 @@
 		
 	</div>
 	
-	<div id="taulaDades"> <!-- Aquí es generarà la taula de Pokemons -->
-
+	<div id="taulaDades"></div><!-- Aquí es generarà la taula de Pokemons -->
+	<div class="chart-container" style="position: relative; width:700px">
+		<canvas id="myChart"></canvas>
 	</div>
+	
 	
 </body>
 </html>
