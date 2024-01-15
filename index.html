@@ -8,12 +8,11 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<title>Dades Massives</title>
 </head>
-<body>
+<body onload="cerca()">
 	<div id="resultat"></div>
 	<script src="js/script.js"></script>
 	<div id ="botons">
 		<select name ="llistes" onchange="printList()"> 
-			<option value ="enBlanc"></option>
 			<option value="pokemon">Pokemons</option>
 			<option value="municipis">Municipis</option>
 			<option value="meteorit">Meteorits</option>
@@ -23,17 +22,17 @@
 		<button onclick ='orderList("ASC")'>Ordre ASC</button>
 		<button onclick ='orderList("DESC")'>Ordre DESC</button>
 		<button onclick ="calcMitjana()">Mitjana pes</button>
-		<input type="text" id="buscador" placeholder="Introdueix un nom..." name="buscador"/>
-		<input type="submit" value = "search" onclick="searchList()"/>
+		<input type="text" value="" id="txtSearch" ></input>
+		
 		<span id="mitjanaPes"></span>
 		
 	</div>
-	
-	<div id="taulaDades"></div><!-- Aquí es generarà la taula de Pokemons -->
-	<div class="chart-container" style="position: relative; width:700px">
-		<canvas id="myChart"></canvas>
+	<div class="info">
+		<div id="taulaDades"></div><!-- Aquí es generarà la taula de Pokemons -->
+		<div class="chart-container" style="position: relative; width:700px">
+			<canvas id="myChart"></canvas>
+		</div>
 	</div>
-	
 	
 </body>
 </html>

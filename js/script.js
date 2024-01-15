@@ -2,7 +2,7 @@
 
 
 /* PART 0: Accedir al JSON i començar a llistar dades */
-
+let myChart;
 let info = [];
 let pokemons=[];
 let municipis =[];
@@ -43,7 +43,7 @@ fetch("js/data/earthMeteorites.json")
     .then((data) => {
         let nomMeteorits = data;
         nomMeteorits.forEach((meteorit, index) => {
-            meteos.push([meteorit.id, meteorit.name, meteorit.year]);
+            meteos.push([meteorit.id, meteorit.name, meteorit.year.slice(0,4)]);
             if (info[index]) {
                 info[index].meteorit = meteorit.name;
             } else {
@@ -73,35 +73,63 @@ fetch("js/data/movies.json")
     });
 
 
-/* PART 1 Funcions i arrays */
-
-
 function iniciar(){
 	location.reload();
     
 }
 
-function orderList(ordre){ // ORDENAR PER ID
-
-	if (ordre=="ASC"){
-		pokemons.sort();
-    }   
-    if (ordre =="DESC") {
-		pokemons.sort().reverse();
-	}
-
+// Funció que rep com es vol ordenar i la llista que es vol ordenar
+function orderList(ordre,valor){  // FER EL ORDRE SEGONS CAMP I SEGONS TIPUS
+    
+    let llista = getTipusLlista();
+    if (llista == "pokemon"){
+        if (ordre=="ASC"){
+            pokemons.sort();
+        }   
+        if (ordre =="DESC") {
+            pokemons.sort().reverse();
+        }
+        printList();
+        
+    }else if (llista == "municipis"){
+        if (ordre=="ASC"){
+            municipis.sort();
+        }   
+        if (ordre =="DESC") {
+            municipis.sort().reverse();
+        }
     printList();
+
+    }else if (llista == "meteorit"){
+        if (ordre=="ASC"){
+            meteos.sort();
+        }   
+        if (ordre =="DESC") {
+            meteos.sort().reverse();
+        }   
+        printList(); 
+    }else if (llista == "movies"){
+        if (ordre=="ASC"){
+            pelis.sort();
+        }   
+        if (ordre =="DESC") {
+            pelis.sort().reverse();
+        }
+        printList();
+    }
+
+	
 }
 
-//Funció que fa de buscador, per llògica he decidit que busqui pel nom 
-function searchList(){
+// Funció que fa de buscador, per llògica he decidit que busqui pel nom 
+function searchList(value){
 
-    let valor = document.getElementById('buscador').value.toLowerCase();
+    let valor = value.toLowerCase();
     let llista = document.querySelector('select[name="llistes"]');
     let tipus = llista.value; // agafem quina llista ha escollit l'usuari per buscar només en aquesta
 
     // console.log(`Aquest es el valor ${valor} i aquest és el tipus ${tipus}`);
-    
+
     if (tipus == "pokemon"){
 
         
@@ -205,12 +233,14 @@ function calcMitjana(){
 
 function printList(){
 
+
+
     let llista = document.querySelector('select[name="llistes"]'); //obtenim el valor de la opció escollida
     let valor = llista.value;
-
+    
     if (valor == "pokemon"){
         let div = document.getElementById("taulaDades");
-        let taula = "<table>";
+        let taula = "<table class>";
         taula += "<th>#</th><th>Imatge</th><th>Nom</th><th>Pes</th>";
         pokemons.forEach((pokemon,index) => {
             let nomPokemon = pokemons[index][0];
@@ -224,7 +254,9 @@ function printList(){
                 
         taula += "</table>";
         div.innerHTML = taula;
+        showChart(); // Mostrem el Chart
     } else if (valor == "municipis") {
+        destrueixChart();
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>INE</th><th>Escut</th><th>Nom</th><th>NºHabitants</th>";
@@ -242,6 +274,7 @@ function printList(){
         div.innerHTML = taula;
        
     } else if (valor == "meteorit") {
+        destrueixChart();
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>Id</th><th>Nom</th><th>Any</th>";
@@ -259,6 +292,7 @@ function printList(){
         div.innerHTML = taula;
         
     } else if (valor == "movies") {
+        destrueixChart();
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += "<th>Imatge</th><th>Titol</th><th>Any</th><th>Puntuació</th>";
@@ -277,41 +311,48 @@ function printList(){
         taula += "</table>";
         div.innerHTML = taula;
     }
-    showChart();
+    
 }
 
+// Funció que activa un event listener per al input de cerca 
+
+function cerca() {
+    let inputSearch = document.getElementById('txtSearch');
+    inputSearch.addEventListener('input', (e) => {
+    searchList(inputSearch.value);
+    });
+}
 // Funció que mostra el Chart
 function showChart(){ 
 
-    // if (chartPokemon.length >0){
-    //     chartPokemon.destroy();
-    // }
+   destrueixChart();
 
     let arrayLabels=["Grass","Poison","Fire","Flying","Water","Bug","Normal","Electric","Ground","Fighting","Psychic","Rock","Ice","Ghost","Dragon"];
     let arrayDadesGraf=[14,33,12,19,32,12,24,9,14,8,14,11,5,3,3];
-    let backgroundColor = new Array(arrayLabels.length);
-    let borderColor = new Array(arrayLabels.length);
-    
-    borderColor.forEach((posicio)=>{
+    let backgroundColor = [];
+    let borderColor = [];
+
+    arrayLabels.forEach(() => {
         let r = Math.floor(Math.random() * 256).toString();
         let g = Math.floor(Math.random() * 256).toString();
         let b = Math.floor(Math.random() * 256).toString();
-        // borderColor.push([posicio.r,posicio.g,posicio.b]);
         
-        console.log(`quedaria aprox ${r}${g}${b}`);
-
+        borderColor.push(`rgba(${r},${g},${b})`);
+        backgroundColor.push(`rgba(${r},${g},${b}, 0.5)`);
     });
 
     const ctx = document.getElementById('myChart');
 
-    new Chart(ctx, {
+    myChart = new Chart(ctx, {
       type: 'polarArea',
       data: {
         labels: arrayLabels,
         datasets: [{
           label: '# of Pokemons',
           data: arrayDadesGraf,
-          borderWidth: 1
+          borderWidth: 1,
+          backgroundColor: backgroundColor,
+          borderColor: borderColor
         }]
       },
       options: {
@@ -322,4 +363,16 @@ function showChart(){
         }
       }
     });
+}
+
+function destrueixChart (){
+    if (myChart){
+        myChart.destroy();
+    }
+}
+
+function getTipusLlista(){
+    let llista = document.querySelector('select[name="llistes"]');
+    let tipus = llista.value;
+    return tipus;
 }
