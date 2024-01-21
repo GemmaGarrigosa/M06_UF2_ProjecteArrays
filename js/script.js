@@ -1,6 +1,6 @@
 let myChart;
 let info = [];
-let pokemons=[];
+let pokemons =[];
 let municipis =[];
 let meteos =[];
 let pelis =[];
@@ -12,20 +12,36 @@ fetch("js/data/pokemon.json")
     .then((response) => response.json())
     .then((data) => {
         let nomsPokemon = data.pokemon;
-        nomsPokemon.forEach((pokemon) => {
-            pokemons.push([pokemon.name,pokemon.img,parseFloat(pokemon.weight),pokemon.id]);
-            info.push({ pokemon: pokemon.name, municipi: " ", meteorit: " ", movie: ""  });   //pokemon.weight.slice(0,-2)
+        nomsPokemon.forEach((poke) => {
+            let pokemon = {
+                num: poke.num,
+                img: poke.img,
+                name: poke.name,
+                weight: parseFloat(poke.weight),
+                type: poke.type,
+            }
+            pokemons.push(pokemon);
+            info.push({ pokemon: pokemon.name, municipi: " ", meteorit: " ", movie: ""  });   
             
         });
     });
+
+    console.log(pokemons);
 
 // MUNICIPIS
 fetch("js/data/municipis.json")
     .then((response) => response.json())
     .then((data) => {
         let nomsMunicipis = data.elements;
-        nomsMunicipis.forEach((municipi, index) => {
-            municipis.push([parseInt(municipi.ine), municipi.municipi_escut, municipi.municipi_nom, parseInt(municipi.nombre_habitants)]);
+        nomsMunicipis.forEach((muni, index) => {
+            let municipi ={
+                ine: muni.ine,
+                escut: muni.municipi_escut,
+                nom: muni.municipi_nom,
+                habitants: parseInt(muni.nombre_habitants),
+            }
+            municipis.push(municipi);
+
             if (info[index]) {
                 info[index].municipi = municipi.municipi_nom;
             } else {
@@ -40,7 +56,14 @@ fetch("js/data/earthMeteorites.json")
     .then((data) => {
         let nomMeteorits = data;
         nomMeteorits.forEach((meteorit, index) => {
-            meteos.push([parseInt(meteorit.id), meteorit.name, meteorit.year.slice(0,4)]);
+            let meteorits = {
+                id: parseInt(meteorit.id),
+                nom: meteorit.name,
+                any: meteorit.year.slice(0,4)
+            }
+            
+            meteos.push(meteorits);
+
             if (info[index]) {
                 info[index].meteorit = meteorit.name;
             } else {
@@ -56,7 +79,13 @@ fetch("js/data/movies.json")
         let nomMovies = data.movies;
         
         nomMovies.forEach((movie, index) => {
-            pelis.push([movie.url, movie.title,movie.year, movie.rating]);
+            let pelicula = {
+                img: movie.url,
+                titol: movie.title,
+                any: movie.year,
+                puntuacio: movie.rating
+            }
+            pelis.push(pelicula);
             
             if (info[index]) {
                 info[index].movie = movie.title;
@@ -75,7 +104,7 @@ function iniciar(){
     
 }
 
-// Funció que rep com es vol ordenar i la llista que es vol ordenar
+// Funció que rep com es vol ordenar i la llista que es vol ordenar //TODO
 function orderList(column){  
 
     let llista = getTipusLlista();
@@ -136,12 +165,12 @@ function searchList(value){
         taula += getHeaderByLlista();
         pokemons.forEach((pokemon,index) => {
             
-            if (pokemons[index][0].toLowerCase().includes(valor)){
+            if (pokemons[index].name.toLowerCase().includes(valor)){
             
-            let nomPokemon = pokemons[index][0];
-            let imatgePokemon = pokemons[index][1];
-            let pesPokemon = pokemons[index][2];
-            let idPokemon = pokemons[index][3];
+            let nomPokemon = pokemons[index].name;
+            let imatgePokemon = pokemons[index].img;
+            let pesPokemon = pokemons[index].weight;
+            let idPokemon = pokemons[index].num;
             taula+= "<tr>";
             taula += `<td> ${idPokemon} </td> <td><img src="${imatgePokemon}"><td> ${nomPokemon} </td></td><td>${pesPokemon}kg</td>`;
             taula += "</tr>";
@@ -156,11 +185,11 @@ function searchList(value){
         let taula = "<table>";
         taula += getHeaderByLlista();
         municipis.forEach((municipi,index) => {
-            if (municipis[index][2].toLowerCase().includes(valor)){
-                let ineMunicipi = municipis[index][0];
-                let escutMunicipi = municipis[index][1];
-                let nomsMunicipi = municipis[index][2];
-                let nombreHabitantsMunicipi= municipis[index][3];
+            if (municipis[index].nom.toLowerCase().includes(valor)){
+                let ineMunicipi = municipis[index].ine;
+                let escutMunicipi = municipis[index].escut;
+                let nomsMunicipi = municipis[index].nom;
+                let nombreHabitantsMunicipi= municipis[index].habitants;
                 taula+= "<tr>";
                 taula += `<td> ${ineMunicipi} </td> <td><img src="${escutMunicipi}"><td> ${nomsMunicipi} </td></td><td>${nombreHabitantsMunicipi}</td>`;
                 taula += "</tr>";
@@ -174,10 +203,10 @@ function searchList(value){
         let taula = "<table>";
         taula += getHeaderByLlista();
         meteos.forEach((meteorit,index) => {
-            if (meteos[index][1].toLowerCase().includes(valor)){
-                let idMeteorit = meteos[index][0];
-                let nomMeteorit = meteos[index][1];
-                let anyMeteorit = meteos[index][2];
+            if (meteos[index].nom.toLowerCase().includes(valor)){
+                let idMeteorit = meteos[index].id;
+                let nomMeteorit = meteos[index].nom;
+                let anyMeteorit = meteos[index].any;
                 
                 taula+= "<tr>";
                 taula += `<td> ${idMeteorit} </td><td> ${nomMeteorit} </td><td>${anyMeteorit}</td>`;
@@ -194,11 +223,11 @@ function searchList(value){
         let taula = "<table>";
         taula += getHeaderByLlista();
         pelis.forEach((movie,index) => {
-            if (pelis[index][1].toLowerCase().includes(valor)){
-            let imatgePeli = pelis[index][0];
-            let titolPeli = pelis[index][1];
-            let anyPeli = pelis[index][2];
-            let puntuacioPeli = pelis[index][3];
+            if (pelis[index].titol.toLowerCase().includes(valor)){
+            let imatgePeli = pelis[index].img;
+            let titolPeli = pelis[index].titol;
+            let anyPeli = pelis[index].any;
+            let puntuacioPeli = pelis[index].puntuacio;
             
             taula+= "<tr>";
             taula += `<td> <img src="${imatgePeli}"> </td><td> ${titolPeli} </td><td>${anyPeli}</td><td>${puntuacioPeli}</td>`;
@@ -217,7 +246,7 @@ function calcMitjana(){
     let totalPes = 0;
     pokemons.forEach((pokemon,index) => {
         comptador++; // comptem el total de pokemons 
-        totalPes += parseInt(pokemons[index][2]);
+        totalPes += parseInt(pokemons[index].weight);
         
         
     });
@@ -234,10 +263,10 @@ function printList(){
         let taula = "<table class>";
         taula += getHeaderByLlista();
         pokemons.forEach((pokemon,index) => {
-            let nomPokemon = pokemons[index][0];
-            let imatgePokemon = pokemons[index][1];
-            let pesPokemon = pokemons[index][2];
-            let idPokemon = pokemons[index][3];
+            let nomPokemon = pokemons[index].name;
+            let imatgePokemon = pokemons[index].img;
+            let pesPokemon = pokemons[index].weight;
+            let idPokemon = pokemons[index].num;
             taula+= "<tr>";
             taula += `<td> ${idPokemon} </td> <td><img src="${imatgePokemon}"><td> ${nomPokemon} </td></td><td>${pesPokemon}kg</td>`;
             taula += "</tr>";
@@ -252,10 +281,10 @@ function printList(){
         let taula = "<table>";
         taula += getHeaderByLlista();
         municipis.forEach((municipi,index) => {
-            let ineMunicipi = municipis[index][0];
-            let escutMunicipi = municipis[index][1];
-            let nomsMunicipi = municipis[index][2];
-            let nombreHabitantsMunicipi= municipis[index][3];
+            let ineMunicipi = municipis[index].ine;
+            let escutMunicipi = municipis[index].escut;
+            let nomsMunicipi = municipis[index].nom;
+            let nombreHabitantsMunicipi= municipis[index].habitants;
             taula+= "<tr>";
             taula += `<td> ${ineMunicipi} </td> <td><img src="${escutMunicipi}"><td> ${nomsMunicipi} </td></td><td>${nombreHabitantsMunicipi}</td>`;
             taula += "</tr>";
@@ -270,9 +299,9 @@ function printList(){
         let taula = "<table>";
         taula += getHeaderByLlista();
         meteos.forEach((meteorit,index) => {
-            let idMeteorit = meteos[index][0];
-            let nomMeteorit = meteos[index][1];
-            let anyMeteorit = meteos[index][2];
+            let idMeteorit = meteos[index].id;
+            let nomMeteorit = meteos[index].nom
+            let anyMeteorit = meteos[index].any;
             
             taula+= "<tr>";
             taula += `<td> ${idMeteorit} </td><td> ${nomMeteorit} </td></td><td>${anyMeteorit}</td>`;
@@ -289,10 +318,10 @@ function printList(){
         taula += getHeaderByLlista();
         pelis.forEach((movie,index) => {
             
-            let imatgePeli = pelis[index][0];
-            let titolPeli = pelis[index][1];
-            let anyPeli = pelis[index][2];
-            let puntuacioPeli = pelis[index][3];
+            let imatgePeli = pelis[index].img;
+            let titolPeli = pelis[index].titol;
+            let anyPeli = pelis[index].any;
+            let puntuacioPeli = pelis[index].puntuacio;
             
             taula+= "<tr>";
             taula += `<td> <img src="${imatgePeli}"> </td><td> ${titolPeli} </td><td>${anyPeli}</td><td>${puntuacioPeli}</td>`;
@@ -364,11 +393,11 @@ function destrueixChart (){
 
 //Passa el thead segons el valor de la llista seleccionada
 function getHeaderByLlista(){
-
-let headerPokemon = "<th onclick='orderList(3)'>#</th><th>Imatge</th><th onclick='orderList(0)'>Nom</th><th onclick='orderList(2)'>Pes</th>";
-let headerMunicipis = "<th onclick='orderList(0)'>INE</th><th>Escut</th><th onclick='orderList(2)'>Nom</th><th onclick='orderList(3)'>NºHabitants</th>"; 
-let headerMeteorits = "<th onclick='orderList(0)'>Id</th><th onclick='orderList(1)'>Nom</th><th onclick='orderList(2)'>Any</th>";
-let headerMovies = "<th>Imatge</th><th onclick='orderList(1)'>Titol</th><th onclick='orderList(2)'>Any</th><th onclick='orderList(3)'>Puntuació</th>";
+   
+let headerPokemon = "<th onclick='orderList(\"num\")'>#</th><th>Imatge</th><th onclick='orderList(\"name\")'>Nom</th><th onclick='orderList(\"weight\")'>Pes</th>";
+let headerMunicipis = "<th onclick='orderList(\"ine\")'>INE</th><th>Escut</th><th onclick='orderList(\"nom\")'>Nom</th><th onclick='orderList(\"habitants\")'>NºHabitants</th>"; 
+let headerMeteorits = "<th onclick='orderList(\"id\")'>Id</th><th onclick='orderList(\"nom\")'>Nom</th><th onclick='orderList(\"any\")'>Any</th>";
+let headerMovies = "<th>Imatge</th><th onclick='orderList(\"titol\")'>Titol</th><th onclick='orderList(\"any\")'>Any</th><th onclick='orderList(\"puntuacio\")'>Puntuació</th>";
 
 let tipus = getTipusLlista();
     if (tipus == "pokemon"){
