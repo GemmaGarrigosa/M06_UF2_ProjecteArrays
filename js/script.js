@@ -1,7 +1,3 @@
-// TODO  BUSCA ASC DESC DE RESTA DE TAULES, BUSCA GENERAL DE MOVIES I CONSTRUÏR TAULA MOVIES
-
-
-/* PART 0: Accedir al JSON i començar a llistar dades */
 let myChart;
 let info = [];
 let pokemons=[];
@@ -9,6 +5,7 @@ let municipis =[];
 let meteos =[];
 let pelis =[];
 let chartPokemon="";
+let ascendent = false;
 
 // POKEMONS
 fetch("js/data/pokemon.json")
@@ -16,8 +13,8 @@ fetch("js/data/pokemon.json")
     .then((data) => {
         let nomsPokemon = data.pokemon;
         nomsPokemon.forEach((pokemon) => {
-            pokemons.push([pokemon.name,pokemon.img,pokemon.weight.slice(0,-2),pokemon.id]);
-            info.push({ pokemon: pokemon.name, municipi: " ", meteorit: " ", movie: ""  }); 
+            pokemons.push([pokemon.name,pokemon.img,parseFloat(pokemon.weight),pokemon.id]);
+            info.push({ pokemon: pokemon.name, municipi: " ", meteorit: " ", movie: ""  });   //pokemon.weight.slice(0,-2)
             
         });
     });
@@ -28,7 +25,7 @@ fetch("js/data/municipis.json")
     .then((data) => {
         let nomsMunicipis = data.elements;
         nomsMunicipis.forEach((municipi, index) => {
-            municipis.push([municipi.ine, municipi.municipi_escut, municipi.municipi_nom, municipi.nombre_habitants]);
+            municipis.push([parseInt(municipi.ine), municipi.municipi_escut, municipi.municipi_nom, parseInt(municipi.nombre_habitants)]);
             if (info[index]) {
                 info[index].municipi = municipi.municipi_nom;
             } else {
@@ -43,7 +40,7 @@ fetch("js/data/earthMeteorites.json")
     .then((data) => {
         let nomMeteorits = data;
         nomMeteorits.forEach((meteorit, index) => {
-            meteos.push([meteorit.id, meteorit.name, meteorit.year.slice(0,4)]);
+            meteos.push([parseInt(meteorit.id), meteorit.name, meteorit.year.slice(0,4)]);
             if (info[index]) {
                 info[index].meteorit = meteorit.name;
             } else {
@@ -79,67 +76,68 @@ function iniciar(){
 }
 
 // Funció que rep com es vol ordenar i la llista que es vol ordenar
-function orderList(ordre,valor){  // FER EL ORDRE SEGONS CAMP I SEGONS TIPUS
-    
+function orderList(column){  
+
     let llista = getTipusLlista();
-    if (llista == "pokemon"){
-        if (ordre=="ASC"){
-            pokemons.sort();
-        }   
-        if (ordre =="DESC") {
-            pokemons.sort().reverse();
-        }
-        printList();
-        
-    }else if (llista == "municipis"){
-        if (ordre=="ASC"){
-            municipis.sort();
-        }   
-        if (ordre =="DESC") {
-            municipis.sort().reverse();
-        }
-    printList();
+    let llistaAOrdenar= []; // creem un array on guardarem el array del tipus de llista que voldrem ordenar
+    if (llista == "pokemon") {
+        llistaAOrdenar = pokemons;
 
-    }else if (llista == "meteorit"){
-        if (ordre=="ASC"){
-            meteos.sort();
-        }   
-        if (ordre =="DESC") {
-            meteos.sort().reverse();
-        }   
-        printList(); 
-    }else if (llista == "movies"){
-        if (ordre=="ASC"){
-            pelis.sort();
-        }   
-        if (ordre =="DESC") {
-            pelis.sort().reverse();
-        }
-        printList();
+    } else if (llista == "municipis") {
+        llistaAOrdenar = municipis;
+    } else if (llista == "meteorit") {
+        llistaAOrdenar = meteos;
+    } else if (llista == "movies") {
+        llistaAOrdenar = pelis;
     }
-
-	
+    
+    console.log(typeof llistaAOrdenar[0][column]);
+   
+    if (ascendent){
+        
+        llistaAOrdenar.sort(function(a,b){
+            if (typeof llistaAOrdenar[0][column] == "string"){
+                return a[column] > b[column];
+            } else {
+                return a[column] - b[column];
+            }
+        });
+        ascendent = false;
+        printList();
+ 
+    } else {
+        llistaAOrdenar.sort(function(a,b){
+            if (typeof llistaAOrdenar[0][column] == "string"){
+                return a[column] < b[column];
+             } else {    
+                return b[column] - a[column];
+            }
+        });
+        ascendent = true;
+        printList();
+     
+    }
+        
 }
+
+
 
 // Funció que fa de buscador, per llògica he decidit que busqui pel nom 
 function searchList(value){
 
     let valor = value.toLowerCase();
-    let llista = document.querySelector('select[name="llistes"]');
-    let tipus = llista.value; // agafem quina llista ha escollit l'usuari per buscar només en aquesta
-
+    let tipus = getTipusLlista();
+    
     // console.log(`Aquest es el valor ${valor} i aquest és el tipus ${tipus}`);
 
     if (tipus == "pokemon"){
-
-        
-
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>#</th><th>Imatge</th><th>Nom</th><th>Pes</th>";
+        taula += getHeaderByLlista();
         pokemons.forEach((pokemon,index) => {
             
             if (pokemons[index][0].toLowerCase().includes(valor)){
+            
             let nomPokemon = pokemons[index][0];
             let imatgePokemon = pokemons[index][1];
             let pesPokemon = pokemons[index][2];
@@ -156,7 +154,7 @@ function searchList(value){
 
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>INE</th><th>Escut</th><th>Nom</th><th>NºHabitants</th>";
+        taula += getHeaderByLlista();
         municipis.forEach((municipi,index) => {
             if (municipis[index][2].toLowerCase().includes(valor)){
                 let ineMunicipi = municipis[index][0];
@@ -174,7 +172,7 @@ function searchList(value){
     }else if (tipus == "meteorit"){
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>Id</th><th>Nom</th><th>Any</th>";
+        taula += getHeaderByLlista();
         meteos.forEach((meteorit,index) => {
             if (meteos[index][1].toLowerCase().includes(valor)){
                 let idMeteorit = meteos[index][0];
@@ -194,7 +192,7 @@ function searchList(value){
         console.log(pelis);
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>Titol</th><th>Imatge</th><th>Any</th><th>Puntuació</th>";
+        taula += getHeaderByLlista();
         pelis.forEach((movie,index) => {
             if (pelis[index][1].toLowerCase().includes(valor)){
             let imatgePeli = pelis[index][0];
@@ -225,23 +223,16 @@ function calcMitjana(){
     });
     let mitjana = document.getElementById("mitjanaPes");
     mitjana.innerHTML = `${(totalPes/comptador).toFixed(2)}kg`;
-  
-
-
-    //fer servir toFixed()
+    
 }
 
 function printList(){
-
-
-
-    let llista = document.querySelector('select[name="llistes"]'); //obtenim el valor de la opció escollida
-    let valor = llista.value;
+    let valor = getTipusLlista();
     
     if (valor == "pokemon"){
         let div = document.getElementById("taulaDades");
         let taula = "<table class>";
-        taula += "<th>#</th><th>Imatge</th><th>Nom</th><th>Pes</th>";
+        taula += getHeaderByLlista();
         pokemons.forEach((pokemon,index) => {
             let nomPokemon = pokemons[index][0];
             let imatgePokemon = pokemons[index][1];
@@ -259,7 +250,7 @@ function printList(){
         destrueixChart();
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>INE</th><th>Escut</th><th>Nom</th><th>NºHabitants</th>";
+        taula += getHeaderByLlista();
         municipis.forEach((municipi,index) => {
             let ineMunicipi = municipis[index][0];
             let escutMunicipi = municipis[index][1];
@@ -277,7 +268,7 @@ function printList(){
         destrueixChart();
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>Id</th><th>Nom</th><th>Any</th>";
+        taula += getHeaderByLlista();
         meteos.forEach((meteorit,index) => {
             let idMeteorit = meteos[index][0];
             let nomMeteorit = meteos[index][1];
@@ -295,7 +286,7 @@ function printList(){
         destrueixChart();
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
-        taula += "<th>Imatge</th><th>Titol</th><th>Any</th><th>Puntuació</th>";
+        taula += getHeaderByLlista();
         pelis.forEach((movie,index) => {
             
             let imatgePeli = pelis[index][0];
@@ -364,15 +355,40 @@ function showChart(){
       }
     });
 }
-
+//Elimina el chart
 function destrueixChart (){
     if (myChart){
         myChart.destroy();
     }
 }
 
+//Passa el thead segons el valor de la llista seleccionada
+function getHeaderByLlista(){
+
+let headerPokemon = "<th onclick='orderList(3)'>#</th><th>Imatge</th><th onclick='orderList(0)'>Nom</th><th onclick='orderList(2)'>Pes</th>";
+let headerMunicipis = "<th onclick='orderList(0)'>INE</th><th>Escut</th><th onclick='orderList(2)'>Nom</th><th onclick='orderList(3)'>NºHabitants</th>"; 
+let headerMeteorits = "<th onclick='orderList(0)'>Id</th><th onclick='orderList(1)'>Nom</th><th onclick='orderList(2)'>Any</th>";
+let headerMovies = "<th>Imatge</th><th onclick='orderList(1)'>Titol</th><th onclick='orderList(2)'>Any</th><th onclick='orderList(3)'>Puntuació</th>";
+
+let tipus = getTipusLlista();
+    if (tipus == "pokemon"){
+        return headerPokemon;
+  
+    }else if (tipus == "municipis"){
+        return headerMunicipis;
+
+    }else if (tipus == "meteorit"){
+       return headerMeteorits;
+
+    }else if (tipus == "movies"){
+        return headerMovies;
+    }
+}
+
+//Mira el valor de la llista seleccionada 
 function getTipusLlista(){
     let llista = document.querySelector('select[name="llistes"]');
     let tipus = llista.value;
     return tipus;
 }
+
