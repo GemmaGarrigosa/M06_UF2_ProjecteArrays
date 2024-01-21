@@ -164,6 +164,7 @@ function searchList(value){
         let div = document.getElementById("taulaDades");
         let taula = "<table>";
         taula += getHeaderByLlista();
+        pokemonsCercats = []; // al principi està buit
         pokemons.forEach((pokemon,index) => {
             
             if (pokemons[index].name.toLowerCase().includes(valor)){
@@ -172,8 +173,7 @@ function searchList(value){
             let imatgePokemon = pokemons[index].img;
             let pesPokemon = pokemons[index].weight;
             let idPokemon = pokemons[index].num;
-
-            pokemonsCercats.push(pokemons[index]); //guardo els resultats de la cerca
+            pokemonsCercats.push(pokemons[index].type); //omplim per al chart
 
             taula+= "<tr>";
             taula += `<td> ${idPokemon} </td> <td><img src="${imatgePokemon}"><td> ${nomPokemon} </td></td><td>${pesPokemon}kg</td>`;
@@ -182,6 +182,8 @@ function searchList(value){
         });
         taula += "</table>";
         div.innerHTML = taula;
+        showChart();
+        
 
     }else if (tipus == "municipis"){
 
@@ -348,14 +350,28 @@ function cerca() {
 }
 // Funció que mostra el Chart
 function showChart(){ 
-
+    
    destrueixChart();
+   let arrayLabels = [];
+   let infoDadesGraf = [14,33,12,19,32,12,24,9,14,8,14,11,5,3,3];
+   let arrayDadesGraf=[];
+    if (pokemonsCercats.length == 0){
+    arrayLabels=["Grass","Poison","Fire","Flying","Water","Bug","Normal","Electric","Ground","Fighting","Psychic","Rock","Ice","Ghost","Dragon"];
+    arrayDadesGraf=infoDadesGraf;
+    } else {
+        pokemonsCercats.flat().forEach(label => {
+            if (!arrayLabels.includes(label)) { //evitem repetits
+              arrayLabels.push(label);
+              let index = arrayLabels.indexOf(label);
 
-    let arrayLabels=["Grass","Poison","Fire","Flying","Water","Bug","Normal","Electric","Ground","Fighting","Psychic","Rock","Ice","Ghost","Dragon"];
-    let arrayDadesGraf=[14,33,12,19,32,12,24,9,14,8,14,11,5,3,3];
+              arrayDadesGraf.push(infoDadesGraf[index]); //de la posicio on està el tipus agafem la posició del numero que hi ha a infoDadesGraf
+            }
+          });
+    }
+    
     let backgroundColor = [];
     let borderColor = [];
-
+    console.log(pokemonsCercats);
     arrayLabels.forEach(() => {
         let r = Math.floor(Math.random() * 256).toString();
         let g = Math.floor(Math.random() * 256).toString();
@@ -395,7 +411,7 @@ function destrueixChart (){
     }
 }
 
-f
+
 //Passa el thead segons el valor de la llista seleccionada
 function getHeaderByLlista(){
    
