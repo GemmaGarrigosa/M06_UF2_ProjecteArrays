@@ -6,6 +6,7 @@ let meteos =[];
 let pelis =[];
 let chartPokemon="";
 let ascendent = false;
+let pokemonsCercats = [];
 
 // POKEMONS
 fetch("js/data/pokemon.json")
@@ -104,7 +105,7 @@ function iniciar(){
     
 }
 
-// Funció que rep com es vol ordenar i la llista que es vol ordenar //TODO
+// Funció que rep com es vol ordenar i la llista que es vol ordenar 
 function orderList(column){  
 
     let llista = getTipusLlista();
@@ -171,6 +172,9 @@ function searchList(value){
             let imatgePokemon = pokemons[index].img;
             let pesPokemon = pokemons[index].weight;
             let idPokemon = pokemons[index].num;
+
+            pokemonsCercats.push(pokemons[index]); //guardo els resultats de la cerca
+
             taula+= "<tr>";
             taula += `<td> ${idPokemon} </td> <td><img src="${imatgePokemon}"><td> ${nomPokemon} </td></td><td>${pesPokemon}kg</td>`;
             taula += "</tr>";
@@ -391,6 +395,7 @@ function destrueixChart (){
     }
 }
 
+f
 //Passa el thead segons el valor de la llista seleccionada
 function getHeaderByLlista(){
    
