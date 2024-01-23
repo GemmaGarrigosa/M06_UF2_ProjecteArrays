@@ -248,16 +248,46 @@ function searchList(value){
 }
 
 function calcMitjana(){
+    let tipus = getTipusLlista();
     let comptador = 0;
     let totalPes = 0;
-    pokemons.forEach((pokemon,index) => {
-        comptador++; // comptem el total de pokemons 
-        totalPes += parseInt(pokemons[index].weight);
-        
-        
-    });
-    let mitjana = document.getElementById("mitjanaPes");
-    mitjana.innerHTML = `${(totalPes/comptador).toFixed(2)}kg`;
+    if (tipus == "pokemon"){
+        pokemons.forEach((pokemon,index) => {
+            comptador++; // comptem el total de pokemons 
+            totalPes += parseInt(pokemons[index].weight);
+            
+            
+        });
+        let mitjana = document.getElementById("mitjanaPes");
+        mitjana.innerHTML = `Mitjana pes: ${(totalPes/comptador).toFixed(2)}kg`;
+    
+    }else if (tipus == "municipis"){
+        municipis.forEach((municipi,index) => {
+            comptador++; 
+            totalPes += parseInt(municipis[index].habitants);
+  
+        });
+        let mitjana = document.getElementById("mitjanaPes");
+        mitjana.innerHTML = `Mitjana habitants: ${(totalPes/comptador).toFixed(2)}`;
+    }else if (tipus == "meteorit"){
+        meteos.forEach((meteorit,index) => {
+            comptador++; 
+            totalPes += parseInt(meteos[index].any);
+            
+            
+        });
+        let mitjana = document.getElementById("mitjanaPes");
+        mitjana.innerHTML = `Mijana anys: ${(totalPes/comptador).toFixed(2)}`;
+    }else if (tipus == "movies"){
+        pelis.forEach((pelicula,index) => {
+            comptador++; // comptem el total de pokemons 
+            totalPes += parseInt(pelis[index].puntuacio);
+            
+            
+        });
+        let mitjana = document.getElementById("mitjanaPes");
+        mitjana.innerHTML = `Mitjana puntuació: ${(totalPes/comptador).toFixed(2)}`;
+    }
     
 }
 
